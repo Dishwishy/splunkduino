@@ -42,12 +42,12 @@ Repeating Web client
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 // if you don't want to use DNS (and reduce your sketch size)
 // use the numeric IP instead of the name for the server:
-IPAddress server(10,14,0,99);  // numeric IP for Google (no DNS)
+IPAddress server(0,0,0,0);  // numeric IP for Google (no DNS)
 //char server[] = "www.google.com";    // name address for Google (using DNS)
 //If you want to use DNS for your server
 // Set the static IP address for the ethernet shield
 // to use if the DHCP fails to assign
-IPAddress ip(10, 14, 0, 253);
+IPAddress ip(0,0,0,0);
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server
@@ -111,7 +111,8 @@ void sendHttpRequest(float h, float f){
     // Make an HTTP POST request to our event collector endpoint
     client.println("POST /services/collector HTTP/1.1");
     // add our authorization header
-    client.println("Authorization: Splunk 2B6461AC-FE4E-4EE6-80B0-11E38DF58C2D");
+    // add your key below after "Splunk"
+    client.println("Authorization: Splunk ");
     //send our JSON payload
     client.println("Content-Type: application/x-www-form-urlencoded;");
     client.println("Content-Length: 122");
