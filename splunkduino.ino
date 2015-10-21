@@ -125,7 +125,7 @@ void sendHttpRequest(float h, float f){
     //how long to keep the connection open
     client.print("Content-Length: ");
     client.println(payload.length());
-    //required to add a space to dilenate our payload from the header info
+    //required to add a space to delineate our payload from the header info
     client.println();
     client.println(payload);
     client.println();
