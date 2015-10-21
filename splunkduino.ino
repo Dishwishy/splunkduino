@@ -42,12 +42,12 @@ Repeating Web client
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 // if you don't want to use DNS (and reduce your sketch size)
 // use the numeric IP instead of the name for the server:
-IPAddress server(0,0,0,0);  // numeric IP for Google (no DNS)
+IPAddress server(10,14,0,85);  // numeric IP for Google (no DNS)
 //char server[] = "www.google.com";    // name address for Google (using DNS)
 //If you want to use DNS for your server
 // Set the static IP address for the ethernet shield
 // to use if the DHCP fails to assign
-IPAddress ip(0,0,0,0);
+IPAddress ip(10,14,0,1);
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server
@@ -104,6 +104,11 @@ void loop()
 void sendHttpRequest(float h, float f){
   //close any current connections
   client.stop();
+  //set up our payload as a string
+  String stringF = String(f, 3);
+  String stringH = String(h, 3);
+  String payload = "{ \"host\" : \"arduino\", \"sourcetype\" : \"arduino\", \"index\" : \"arduino\", \"event\" :  {\"temp\" : \"" + stringF + "\" , \"humidity\": \"" + stringH + "\" }}";
+
   // if you get a connection, report back via serial
   //also set client port to 8088 default for HTTP event collector
   if (client.connect(server, 8088)) {
@@ -112,16 +117,17 @@ void sendHttpRequest(float h, float f){
     client.println("POST /services/collector HTTP/1.1");
     // add our authorization header
     // add your key below after "Splunk"
-    client.println("Authorization: Splunk ");
+    client.println("Authorization: Splunk 2B6461AC-FE4E-4EE6-80B0-11E38DF58C2D");
     //send our JSON payload
-    client.println("Content-Type: application/x-www-form-urlencoded;");
-    client.println("Content-Length: 122");
+    //uncomment below if you care about the content-type headers...I do not
+    //client.println("Content-Type: application/x-www-form-urlencoded;");
+    //Content-Length header is ABSOLUTELY required, otherwise Splunk doesnt know
+    //how long to keep the connection open
+    client.print("Content-Length: ");
+    client.println(payload.length());
+    //required to add a space to dilenate our payload from the header info
     client.println();
-    client.print("{ \"host\" : \"arduino\", \"sourcetype\" : \"arduino\", \"index\" : \"arduino\", \"event\" :  {\"temp\" : \"");
-    client.print(f);
-    client.print("\" , \"humidity\": \"");
-    client.print(h);
-    client.print("\" }}");
+    client.println(payload);
     client.println();
   }
   else {
